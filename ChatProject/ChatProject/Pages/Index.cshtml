@@ -1,0 +1,15 @@
+﻿@page
+@model IndexModel
+@using Pages.Shared.Components
+
+@{
+    ViewData["Title"] = "Home page";
+    if (!User.Identity.IsAuthenticated)
+    {
+        Redirect("~/Identity/Account/Login");
+    }
+}
+
+<div>
+    <ChatSelectorComponent>Test</ChatSelectorComponent>
+</div>
