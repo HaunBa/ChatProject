@@ -3,7 +3,8 @@
 @using Pages.Shared.Components
 
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "Home";
+
     if (!User.Identity.IsAuthenticated)
     {
         Redirect("~/Identity/Account/Login");
@@ -11,5 +12,5 @@
 }
 
 <div>
-    <ChatSelectorComponent>Test</ChatSelectorComponent>
+    <ChatSelectorComponent/>
 </div>
