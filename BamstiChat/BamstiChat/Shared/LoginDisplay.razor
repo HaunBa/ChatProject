@@ -1,4 +1,4 @@
-﻿@using Microsoft.AspNetCore.Components.Authorization.AuthorizeView
+﻿@using static Microsoft.AspNetCore.Components.Authorization.AuthorizeView
 @inject ApplicationDbContext _context
 @inject RequestService _req
 
@@ -6,7 +6,11 @@
     private List<Request> Requests;    
     private int ReqAmount = 4;
 
-    protected override void OnInitialized() => Requests = _req.GetAllRequestsFromUser(context.User.Identity.Name);
+    protected override void OnInitialized()
+    {
+        Requests = await _req.GetAllRequestsFromUser(context.User.Identity.Name);
+        ReqAmount = Requests.Count;
+    }
 
     private void AcceptRequest(int reqId)
     {
