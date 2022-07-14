@@ -1,25 +1,25 @@
-﻿@using static Microsoft.AspNetCore.Components.Authorization.AuthorizeView
+﻿@*@using static Microsoft.AspNetCore.Components.Authorization.AuthorizeView*@
 @inject ApplicationDbContext _context
 @inject RequestService _req
 
 @code {
-    private List<Request> Requests;    
-    private int ReqAmount = 4;
+    private List<Request> Requests = new List<Request>();    
+    private int ReqAmount = Requests.Count;
 
     protected override void OnInitialized()
     {
-        Requests = await _req.GetAllRequestsFromUser(context.User.Identity.Name);
+        Requests = await _req.GetAllRequestsFromUser(User.Identity.Name);
         ReqAmount = Requests.Count;
     }
 
     private void AcceptRequest(int reqId)
     {
-
+        await _req.AcceptRequestFromUserWithId(User.Identity.Name, reqId);
     }
 
     private void DeclineRequest(int reqId)
     {
-        
+        await _req.RejectRequestFromUserWithId(User.Identity.Name, reqId);
     }
 }
 
@@ -28,8 +28,7 @@
         <div class="dropdown custom-dropdown">
             <a href="#" data-toggle="dropdown" class="dropdown-link" aria-haspopup="true" aria-expanded="false">
               <span class="wrap-icon icon-notifications"></span>
-              <span class="number">@ReqAmount</span>
-              
+              <span class="number">@ReqAmount</span>              
             </a>
 
             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
