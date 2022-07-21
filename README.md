@@ -62,9 +62,9 @@
 </a>
 
 
-We are currently looking for new donators to help and maintain this project! ❤️
+We are currently looking for new People to help and maintain this project! ❤️
 
-By donating, you will help the development of this project, and *you will be featured in this ChatProject's README.md*, so everyone can see your kindness and visit your content ⭐.
+You either can contribute to the Project via Pull-Requests or via creating Issues. Any help is appreciated⭐.
 
 <a href="https://github.com/sponsors/HaunBa"> <!-- MODIFY THIS LINK TO YOUR MAIN DONATING SITE IF YOU ARE NOT IN THE GITHUB SPONSORS PROGRAM -->
   <img src="https://img.shields.io/badge/Sponsor-HaunBa/ChatProject-blue?logo=github-sponsors&style=for-the-badge&color=red">
