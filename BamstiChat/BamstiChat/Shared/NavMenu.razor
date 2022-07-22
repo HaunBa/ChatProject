@@ -1,5 +1,5 @@
 ﻿@using System.Security.Claims
-@inject FriendService _friends
+@inject IFriendService _friends
 @inject IHttpContextAccessor _context
 
 <div class="top-row ps-3 navbar navbar-dark">
@@ -59,8 +59,8 @@
     protected override Task OnInitializedAsync()
     {
         var username = _context.HttpContext.User.Identity.Name;
-        Friends = _friends.GetAllFriends(username).GetAwaiter().GetResult();
-
+        if (username != null) Friends = _friends.GetAllFriends(username).GetAwaiter().GetResult();
+        
         return Task.CompletedTask;
     }
 }

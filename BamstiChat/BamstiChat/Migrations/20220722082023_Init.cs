@@ -13,7 +13,7 @@ namespace BamstiChat.Migrations
                 name: "Identity");
 
             migrationBuilder.CreateTable(
-                name: "Users",
+                name: "AspNetUsers",
                 schema: "Identity",
                 columns: table => new
                 {
@@ -47,7 +47,7 @@ namespace BamstiChat.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Since = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
@@ -62,7 +62,7 @@ namespace BamstiChat.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Type = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Type = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -91,7 +91,7 @@ namespace BamstiChat.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     Since = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
@@ -101,9 +101,8 @@ namespace BamstiChat.Migrations
                         name: "FK_Friends_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalSchema: "Identity",
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -124,7 +123,7 @@ namespace BamstiChat.Migrations
                         name: "FK_UserClaims_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalSchema: "Identity",
-                        principalTable: "Users",
+                        principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -146,7 +145,7 @@ namespace BamstiChat.Migrations
                         name: "FK_UserLogins_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalSchema: "Identity",
-                        principalTable: "Users",
+                        principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -168,7 +167,7 @@ namespace BamstiChat.Migrations
                         name: "FK_UserTokens_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalSchema: "Identity",
-                        principalTable: "Users",
+                        principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -181,10 +180,10 @@ namespace BamstiChat.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     SentAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    SenderUserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    DestinationUserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Text = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ImageData = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
+                    SenderUserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    DestinationUserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    Text = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ImageData = table.Column<byte[]>(type: "varbinary(max)", nullable: true),
                     ChatId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
@@ -194,16 +193,14 @@ namespace BamstiChat.Migrations
                         name: "FK_Messages_AspNetUsers_DestinationUserId",
                         column: x => x.DestinationUserId,
                         principalSchema: "Identity",
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Messages_AspNetUsers_SenderUserId",
                         column: x => x.SenderUserId,
                         principalSchema: "Identity",
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Messages_Chats_ChatId",
                         column: x => x.ChatId,
@@ -219,12 +216,12 @@ namespace BamstiChat.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    TypeId = table.Column<int>(type: "int", nullable: false),
+                    TypeId = table.Column<int>(type: "int", nullable: true),
                     Date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     SenderId = table.Column<int>(type: "int", nullable: false),
-                    SenderId1 = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    SenderId1 = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     RetrieverId = table.Column<int>(type: "int", nullable: false),
-                    RetrieverId1 = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    RetrieverId1 = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -233,23 +230,20 @@ namespace BamstiChat.Migrations
                         name: "FK_Requests_AspNetUsers_RetrieverId1",
                         column: x => x.RetrieverId1,
                         principalSchema: "Identity",
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Requests_AspNetUsers_SenderId1",
                         column: x => x.SenderId1,
                         principalSchema: "Identity",
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Requests_ReqTypes_TypeId",
                         column: x => x.TypeId,
                         principalSchema: "Identity",
                         principalTable: "ReqTypes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -290,7 +284,7 @@ namespace BamstiChat.Migrations
                         name: "FK_UserRoles_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalSchema: "Identity",
-                        principalTable: "Users",
+                        principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -305,13 +299,13 @@ namespace BamstiChat.Migrations
             migrationBuilder.CreateIndex(
                 name: "EmailIndex",
                 schema: "Identity",
-                table: "Users",
+                table: "AspNetUsers",
                 column: "NormalizedEmail");
 
             migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
                 schema: "Identity",
-                table: "Users",
+                table: "AspNetUsers",
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
@@ -438,7 +432,7 @@ namespace BamstiChat.Migrations
                 schema: "Identity");
 
             migrationBuilder.DropTable(
-                name: "Users",
+                name: "AspNetUsers",
                 schema: "Identity");
         }
     }

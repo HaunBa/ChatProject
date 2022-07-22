@@ -3,9 +3,9 @@
     public class RequestService : IRequestService
     {
         private readonly ApplicationDbContext _context;
-        private readonly FriendService _friendService;
+        private readonly IFriendService _friendService;
 
-        public RequestService(ApplicationDbContext context, FriendService friendService)
+        public RequestService(ApplicationDbContext context, IFriendService friendService)
         {
             _context = context;
             _friendService = friendService;

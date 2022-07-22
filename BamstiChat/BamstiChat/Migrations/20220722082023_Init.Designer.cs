@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BamstiChat.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220721122543_Init")]
+    [Migration("20220722082023_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -34,7 +34,6 @@ namespace BamstiChat.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("Since")
@@ -57,7 +56,6 @@ namespace BamstiChat.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
@@ -79,22 +77,18 @@ namespace BamstiChat.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("DestinationUserId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<byte[]>("ImageData")
-                        .IsRequired()
                         .HasColumnType("varbinary(max)");
 
                     b.Property<string>("SenderUserId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("SentAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Text")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -117,7 +111,6 @@ namespace BamstiChat.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("Type")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -140,17 +133,15 @@ namespace BamstiChat.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("RetrieverId1")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("SenderId")
                         .HasColumnType("int");
 
                     b.Property<string>("SenderId1")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("TypeId")
+                    b.Property<int?>("TypeId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -282,7 +273,7 @@ namespace BamstiChat.Migrations
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
-                    b.ToTable("Users", "Identity");
+                    b.ToTable("AspNetUsers", "Identity");
 
                     b.HasDiscriminator<string>("Discriminator").HasValue("IdentityUser");
                 });
@@ -377,7 +368,6 @@ namespace BamstiChat.Migrations
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
 
                     b.Property<string>("FriendCode")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasDiscriminator().HasValue("ApplicationUser");
@@ -387,9 +377,7 @@ namespace BamstiChat.Migrations
                 {
                     b.HasOne("BamstiChat.Models.ApplicationUser", "User")
                         .WithMany("Friends")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserId");
 
                     b.Navigation("User");
                 });
@@ -402,15 +390,11 @@ namespace BamstiChat.Migrations
 
                     b.HasOne("BamstiChat.Models.ApplicationUser", "DestinationUser")
                         .WithMany()
-                        .HasForeignKey("DestinationUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("DestinationUserId");
 
                     b.HasOne("BamstiChat.Models.ApplicationUser", "SenderUser")
                         .WithMany()
-                        .HasForeignKey("SenderUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("SenderUserId");
 
                     b.Navigation("DestinationUser");
 
@@ -421,21 +405,15 @@ namespace BamstiChat.Migrations
                 {
                     b.HasOne("BamstiChat.Models.ApplicationUser", "Retriever")
                         .WithMany()
-                        .HasForeignKey("RetrieverId1")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("RetrieverId1");
 
                     b.HasOne("BamstiChat.Models.ApplicationUser", "Sender")
                         .WithMany()
-                        .HasForeignKey("SenderId1")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("SenderId1");
 
                     b.HasOne("BamstiChat.Models.ReqType", "Type")
                         .WithMany()
-                        .HasForeignKey("TypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("TypeId");
 
                     b.Navigation("Retriever");
 
