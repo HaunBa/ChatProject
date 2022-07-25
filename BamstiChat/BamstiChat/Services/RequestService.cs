@@ -63,7 +63,7 @@
 
         public async Task<List<Request>> GetAllRequestsFromUser(string username)
         {
-            var fUser = await _context.Users.FirstOrDefaultAsync(x => x.UserName == username);
+            var fUser = _context.Users.FirstOrDefault(x => x.UserName == username);
             return _context.Requests.Where(x => x.Retriever == fUser).ToList();
         }
 

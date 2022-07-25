@@ -59,7 +59,7 @@
     protected override Task OnInitializedAsync()
     {
         var username = _context.HttpContext.User.Identity.Name;
-        if (username != null) Friends = _friends.GetAllFriends(username).GetAwaiter().GetResult();
+        //if (username != null) Friends = _friends.GetAllFriends(username).GetAwaiter().GetResult();
         
         return Task.CompletedTask;
     }

@@ -18,3 +18,7 @@ global using Microsoft.AspNetCore.Mvc.RazorPages;
 global using System.ComponentModel.DataAnnotations.Schema;
 global using Microsoft.AspNetCore.Components.Authorization;
 global using System.ComponentModel.DataAnnotations;
+
+// SignalR
+global using Microsoft.AspNetCore.SignalR;
+global using BamstiChat.Hubs;

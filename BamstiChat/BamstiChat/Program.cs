@@ -15,6 +15,9 @@ builder.Services.AddSingleton<WeatherForecastService>();
 
 builder.Services.AddScoped<IRequestService, RequestService>();
 builder.Services.AddScoped<IFriendService, FriendService>();
+builder.Services.AddScoped<IChatService, ChatService>();
+
+builder.Services.AddSignalR();
 
 var app = builder.Build();
 
@@ -42,5 +45,8 @@ app.UseAuthorization();
 app.MapControllers();
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
+
+app.MapHub<ChatHub>("/Chat");
+app.MapHub<NotificationHub>("/Notification");
 
 app.Run();
