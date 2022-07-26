@@ -1,0 +1,79 @@
+﻿@page "/AddFriend"
+@inject IRequestService _req
+@inject IFriendService _friend
+@inject IHttpContextAccessor _http
+
+@code {
+    private string friendCode = "";
+    private bool Error;
+    private string ErrorText = "";
+
+    private string GetStatusMessageClass()
+    {
+        return ErrorText.StartsWith("Error") ? "danger" : "success";
+    }
+
+    private async void SendRequest()
+    {
+        Error = true;
+        var currentUser = _http.HttpContext.User.Identity.Name;
+
+        if (string.IsNullOrEmpty(friendCode))
+        {
+            ErrorText = "Error: Please provide a valid Friendcode";
+            return;
+        }else if (friendCode.Length != 8)
+        {
+            ErrorText = "Error: Please provide a Friendcode that is 8 Characters long";
+        }else
+        {
+            var res = await _req.SendRequestToUser(currentUser, friendCode);
+            switch (res)
+            {
+                case -1:
+                    ErrorText = "Error: Sender couldn't be found.";
+
+                    break;
+                case -2:
+                    ErrorText = $"Error: User with the Friendcode '{friendCode}' doesn't exist.";
+
+                    break;
+                case -3:
+                    ErrorText = "Error: You already sent this User a FriendRequest.";
+                    break;
+                case -4:
+                    ErrorText = "Error: You cannot send Friend Requests to yourself.";
+                    break;
+                case 1:
+                    ErrorText = "Success: Request Sent Successfully.";
+
+                    break;
+                default:
+                    Error = false;
+                    break;
+            }
+        }
+    }
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h2> Add Friend</h2>
+        </div>
+    </div>
+
+    <div class="row">
+        <div hidden="@(!Error)" class="alert alert-@GetStatusMessageClass() alert-dismissible" role="alert">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            @ErrorText
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col">
+            <input @bind="friendCode" class="form-control w-25" type="text"/>
+            <button class="btn btn-primary w-25 mt-1" @onclick="SendRequest">Send Friend Request</button>
+        </div>
+    </div>    
+</div>

@@ -4,11 +4,13 @@
     {
         private readonly ApplicationDbContext _context;
         private readonly IFriendService _friendService;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public RequestService(ApplicationDbContext context, IFriendService friendService)
+        public RequestService(ApplicationDbContext context, IFriendService friendService, UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _friendService = friendService;
+            _userManager = userManager;
         }
 
         /// <summary>
@@ -19,8 +21,8 @@
         /// <returns>Result Code of the Operation</returns>
         public async Task<int> AcceptRequestFromUserWithId(string username, int reqId)
         {
-            var request = await _context.Requests.FirstOrDefaultAsync(x => x.Id == reqId);
-            var fUser = await _context.Users.FirstOrDefaultAsync(x => x.UserName == username);
+            var request = await _context.Requests.Include(x => x.Type).FirstOrDefaultAsync(x => x.Id == reqId);
+            var fUser = await _userManager.Users.Include(x => x.Friends).FirstOrDefaultAsync(x => x.UserName == username);
             
             // error Handling
             if (fUser == null || request == null)
@@ -63,13 +65,48 @@
 
         public async Task<List<Request>> GetAllRequestsFromUser(string username)
         {
-            var fUser = _context.Users.FirstOrDefault(x => x.UserName == username);
+            var fUser = await _context.Users.FirstOrDefaultAsync(x => x.UserName == username);
             return _context.Requests.Where(x => x.Retriever == fUser).ToList();
         }
 
         public Task<int> RejectRequestFromUserWithId(string username, int reqId)
         {
             throw new NotImplementedException();
+        }
+
+        /// <summary>
+        ///  Sends a request to the Specified User with given Code
+        /// </summary>
+        /// <param name="sender">User that is sending the request</param>
+        /// <param name="reciever">Code of the Reciever</param>
+        /// <returns>-1 when Sender cannot be found, -2 when Reciever cannot be found, 1 when succeded</returns>
+        public async Task<int> SendRequestToUser(string sender, string reciever)
+        {
+            var findByName = _userManager.FindByNameAsync(sender);
+            var user = await findByName;
+            if (user == null) return -1;
+            var recUser = await _userManager.Users.FirstOrDefaultAsync(x => x.FriendCode == reciever);
+            if (recUser == null) return -2;
+
+            var req = await _context.Requests.FirstOrDefaultAsync(x => x.SenderId == user.Id && x.RetrieverId == recUser.Id);
+            if (req != null) return -3;
+
+            //if (user.Id == recUser.Id) return -4;
+
+            var friendType = await _context.ReqTypes.FirstOrDefaultAsync(x => x.Type == "Friend");
+
+            req = new Request()
+            {                
+                Date = DateTime.Now,
+                RetrieverId = recUser.Id,
+                SenderId = user.Id,
+                Type = friendType
+            };
+
+            _context.Requests.Add(req);
+            await _context.SaveChangesAsync();
+
+            return 1;
         }
     }
 }

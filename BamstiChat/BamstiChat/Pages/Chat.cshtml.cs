@@ -7,6 +7,7 @@ namespace BamstiChat.Pages
     {
         public void OnGet()
         {
+
         }
     }
 }

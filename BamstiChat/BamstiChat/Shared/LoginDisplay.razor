@@ -23,9 +23,10 @@
                         <ul class="custom-notifications">
                             <li>
                               <a href="#" class="d-flex">
-                                <div class="img mr-3">
-                                  @*<img src="images/person_1.jpg" alt="Image" class="img-fluid">*@
-                                </div>
+                                  <!-- Maybe add Profile Picture later -->
+                                @*<div class="img mr-3">
+                                  <img src="images/person_1.jpg" alt="Image" class="img-fluid">
+                                </div>*@
                                 <div class="text">
                                   <strong>@item.Sender.UserName:</strong> sent you a Friend Request
                                 </div>
@@ -43,9 +44,9 @@
               </div>
             </div>
           </div>
-        <a href="Identity/Account/Manage">Hello, @context.User.Identity?.Name!</a>
-        <form method="post" action="Identity/Account/LogOut">
-            <button type="submit" class="nav-link btn btn-link">Log out</button>
+        <a class="text-dark" href="Identity/Account/Manage">Hello, @context.User.Identity?.Name!</a>
+        <form class="text-dark" method="post" action="Identity/Account/LogOut">
+            <button type="submit" class="nav-link btn btn-link text-dark">Log out</button>
         </form>
     </Authorized>
     <NotAuthorized>
@@ -55,22 +56,22 @@
 </AuthorizeView>
 
 @code{
-    List<Request> Requests;
+    List<Request> Requests = new();
 
-    private void AcceptRequest(int id)
+    private async void AcceptRequest(int id)
     {
-
+        await _req.AcceptRequestFromUserWithId(_http.HttpContext.User.Identity.Name, id);
     }
 
-    private void DeclineRequest(int id)
+    private async void DeclineRequest(int id)
     {
-        
+        await _req.RejectRequestFromUserWithId(_http.HttpContext.User.Identity.Name, id);
     }
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         var user = _http.HttpContext.User.Identity.Name;
-        Requests = _req.GetAllRequestsFromUser(user).GetAwaiter().GetResult();
-        base.OnInitialized();
+        Requests = await _req.GetAllRequestsFromUser(user);
+        await base.OnInitializedAsync();
     }
 }
