@@ -1,6 +1,8 @@
 ﻿@using System.Security.Claims
 @inject IFriendService _friends
 @inject IHttpContextAccessor _context
+@inject IRequestService _req
+@inject IHttpContextAccessor _http
 
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
@@ -18,6 +20,69 @@
                 <span class="oi oi-home" aria-hidden="true"></span> Home
             </NavLink>
         </div>
+        <div class="content">
+            <div class="container">
+              <div class="row justify-content-center text-center">
+                <div class="col-md-5">
+                  <div class="dropdown custom-dropdown">
+                    <a href="#" data-toggle="dropdown" class="dropdown-link" aria-haspopup="true" aria-expanded="false">
+                      <span class="wrap-icon icon-notifications"></span>
+                      <span class="number">@Requests.Count</span>              
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right" style="width:300px;" aria-labelledby="dropdownMenuButton">
+                      <div class="title-wrap d-flex align-items-center">
+                        <h3 class="title mb-0">Notifications</h3>
+                      </div>
+                      <div class="container">
+                        @foreach (var item in Requests)
+                        {
+                            <hr />
+                            <div class="row">
+                                <div class="col">
+                                    <!-- Message -->
+                                   <strong>@item.Sender.UserName :</strong> sent you a @item.Type.Type Request
+                                </div>
+                                <div class="col">
+                                    <!-- Action -->
+                                    <div class="row">
+                                        <button class="btn btn-success w-75" @onclick="() => AcceptRequest(item.Id)" >Accept</button>
+                                    </div>
+                                    <div class="row mt-1">
+                                        <button class="btn btn-danger w-75" @onclick="() => DeclineRequest(item.Id)">Decline</button>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                      </div>
+                      @*@foreach (var item in Requests)
+                      {
+                        
+                        <ul class="custom-notifications">
+                            <li>
+                              <a href="#" class="d-flex">
+                                  <!-- Maybe add Profile Picture later -->
+                                <div class="img mr-3">
+                                  <img src="images/person_1.jpg" alt="Image" class="img-fluid">
+                                </div>
+                                <div class="text">
+                                  <strong>@item.Sender.UserName:</strong> sent you a Friend Request
+                                </div>
+                                <div>
+                                  <a class="btn btn-success w-25 h-50" @onclick="() => AcceptRequest(item.Id)" >Accept</a>
+                                  <a class="btn btn-danger w-25 h-50" @onclick="() => DeclineRequest(item.Id)">Decline</a>
+                                </div>
+                              </a>
+                            </li>
+                          </ul>
+                      }*@
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="AddFriend">
                 <span class="oi oi-people" aria-hidden="true"></span> Add Friends
@@ -45,6 +110,20 @@
 </div>
 
 @code {
+    List<Request> Requests = new();
+
+    private async void AcceptRequest(int id)
+    {
+        await _req.AcceptRequestFromUserWithId(_http.HttpContext.User.Identity.Name, id);
+    }
+
+    private async void DeclineRequest(int id)
+    {
+        await _req.RejectRequestFromUserWithId(_http.HttpContext.User.Identity.Name, id);
+    }
+
+
+
     private List<Friend> Friends = new();
 
     private bool collapseNavMenu = true;
@@ -61,10 +140,13 @@
         return new RedirectResult($"~/Chat/{username}");
     }
 
-
-    protected override async Task OnInitializedAsync()
+    protected override async void OnInitialized()
     {
         var username = _context.HttpContext.User.Identity.Name;
         if (username != null) Friends = await _friends.GetAllFriends(username);
+        var user = _http.HttpContext.User.Identity.Name;
+        Requests = await _req.GetAllRequestsFromUser(user);
+
+        base.OnInitialized();
     }
 }

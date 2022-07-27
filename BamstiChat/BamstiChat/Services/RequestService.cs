@@ -66,7 +66,7 @@
         public async Task<List<Request>> GetAllRequestsFromUser(string username)
         {
             var fUser = await _context.Users.FirstOrDefaultAsync(x => x.UserName == username);
-            return _context.Requests.Where(x => x.Retriever == fUser).ToList();
+            return _context.Requests.Include(x => x.Type).Where(x => x.Retriever == fUser).ToList();
         }
 
         public Task<int> RejectRequestFromUserWithId(string username, int reqId)

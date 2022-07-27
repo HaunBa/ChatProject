@@ -1,11 +1,12 @@
 ﻿@page "/"
 
+@inject IHttpContextAccessor _http
+
 <PageTitle>Index</PageTitle>
 
-<h1>Hello, world!</h1>
-
-Welcome to your new app.
-
-<SurveyPrompt Title="How is Blazor working for you?" />
-
-
+@if (_http.HttpContext.User.Identity.IsAuthenticated)
+{
+    <h1> Hello @_http.HttpContext.User.Identity.Name</h1>
+}else{
+    <h1> Welcome : )</h1>
+}

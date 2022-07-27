@@ -34,7 +34,7 @@
 
         public async Task<List<Friend>> GetAllFriends(string username)
         {
-            var user = await _userManager.FindByNameAsync(username);
+            var user = await _userManager.Users.Include(x => x.Friends).FirstOrDefaultAsync(x => x.UserName == username);
             return user.Friends.ToList();
         }
 

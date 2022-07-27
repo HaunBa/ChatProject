@@ -5,7 +5,7 @@
 
 @code {
     private string friendCode = "";
-    private bool Error;
+    private bool Error = true;
     private string ErrorText = "";
 
     private string GetStatusMessageClass()
@@ -20,10 +20,12 @@
 
         if (string.IsNullOrEmpty(friendCode))
         {
+            Error = false;
             ErrorText = "Error: Please provide a valid Friendcode";
             return;
         }else if (friendCode.Length != 8)
         {
+            Error = false;
             ErrorText = "Error: Please provide a Friendcode that is 8 Characters long";
         }else
         {
@@ -31,25 +33,30 @@
             switch (res)
             {
                 case -1:
+                    Error = false;
                     ErrorText = "Error: Sender couldn't be found.";
 
                     break;
                 case -2:
                     ErrorText = $"Error: User with the Friendcode '{friendCode}' doesn't exist.";
-
+                    
+                    Error = false;
                     break;
                 case -3:
                     ErrorText = "Error: You already sent this User a FriendRequest.";
+                    Error = false;
                     break;
                 case -4:
                     ErrorText = "Error: You cannot send Friend Requests to yourself.";
+                    Error = false;
                     break;
                 case 1:
                     ErrorText = "Success: Request Sent Successfully.";
+                    Error = false;
 
                     break;
                 default:
-                    Error = false;
+                    Error = true;
                     break;
             }
         }
@@ -64,7 +71,7 @@
     </div>
 
     <div class="row">
-        <div hidden="@(!Error)" class="alert alert-@GetStatusMessageClass() alert-dismissible" role="alert">
+        <div hidden="@Error" class="alert alert-@GetStatusMessageClass() alert-dismissible" role="alert">
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             @ErrorText
         </div>
