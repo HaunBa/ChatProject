@@ -38,17 +38,19 @@
 
                     break;
                 case -2:
-                    ErrorText = $"Error: User with the Friendcode '{friendCode}' doesn't exist.";
-                    
+                    ErrorText = $"Error: User with the Friendcode '{friendCode}' doesn't exist.";                    
                     Error = false;
+
                     break;
                 case -3:
                     ErrorText = "Error: You already sent this User a FriendRequest.";
                     Error = false;
+
                     break;
                 case -4:
                     ErrorText = "Error: You cannot send Friend Requests to yourself.";
                     Error = false;
+
                     break;
                 case 1:
                     ErrorText = "Success: Request Sent Successfully.";
@@ -59,6 +61,7 @@
                     Error = true;
                     break;
             }
+            InvokeAsync(StateHasChanged);
         }
     }
 }

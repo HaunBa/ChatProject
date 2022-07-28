@@ -4,6 +4,7 @@
     {
         public Task<int> AddFriend(string username, string friendId);
         public Task<int> RemoveFriend(string username, string friendId);
-        public Task<List<Friend>> GetAllFriends(string username);
+        public Task<List<Friend>> GetAllFriendsAsync(string username);
+        public List<Friend> GetAllFriends(string username);
     }
 }

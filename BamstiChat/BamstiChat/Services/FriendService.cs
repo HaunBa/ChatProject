@@ -32,9 +32,15 @@
             return 1;
         }
 
-        public async Task<List<Friend>> GetAllFriends(string username)
+        public async Task<List<Friend>> GetAllFriendsAsync(string username)
         {
             var user = await _userManager.Users.Include(x => x.Friends).FirstOrDefaultAsync(x => x.UserName == username);
+            return user.Friends.ToList();
+        }
+
+        public List<Friend> GetAllFriends(string username)
+        {
+            var user = _userManager.Users.Include(x => x.Friends).FirstOrDefault(x => x.UserName.Equals(username));
             return user.Friends.ToList();
         }
 

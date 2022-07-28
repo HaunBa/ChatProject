@@ -33,8 +33,10 @@
             switch (request.Type.Type)
             {
                 case "Friend":
-                    await _friendService.AddFriend(username, request.Sender.Id);
-                    return 1;
+                    var res = await _friendService.AddFriend(username, request.Sender.Id);
+                    if(res == 1) _context.Requests.Remove(request);
+                    await _context.SaveChangesAsync();
+                    return res;
                 case "Group":
                     // Add To Group Functionality
                     return 2;

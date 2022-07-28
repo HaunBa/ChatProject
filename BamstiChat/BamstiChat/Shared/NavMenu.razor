@@ -3,6 +3,7 @@
 @inject IHttpContextAccessor _context
 @inject IRequestService _req
 @inject IHttpContextAccessor _http
+@inject Microsoft.AspNetCore.Components.NavigationManager navigationManager
 
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
@@ -20,7 +21,7 @@
                 <span class="oi oi-home" aria-hidden="true"></span> Home
             </NavLink>
         </div>
-        <div class="content">
+        <NavLink class="content">
             <div class="container">
               <div class="row justify-content-center text-center">
                 <div class="col-md-5">
@@ -34,53 +35,37 @@
                         <h3 class="title mb-0">Notifications</h3>
                       </div>
                       <div class="container">
-                        @foreach (var item in Requests)
+                        @if (!string.IsNullOrWhiteSpace(username))
                         {
-                            <hr />
-                            <div class="row">
-                                <div class="col">
-                                    <!-- Message -->
-                                   <strong>@item.Sender.UserName :</strong> sent you a @item.Type.Type Request
-                                </div>
-                                <div class="col">
-                                    <!-- Action -->
-                                    <div class="row">
-                                        <button class="btn btn-success w-75" @onclick="() => AcceptRequest(item.Id)" >Accept</button>
+                            @foreach (var item in Requests)
+                            {
+
+                                <hr />
+                                <div class="row">
+                                    <div class="col">
+                                        <!-- Message -->
+                                        <strong>@item.Sender.UserName :</strong> sent you a @item.Type.Type Request
                                     </div>
-                                    <div class="row mt-1">
-                                        <button class="btn btn-danger w-75" @onclick="() => DeclineRequest(item.Id)">Decline</button>
+                                    <div class="col">
+                                        <!-- Action -->
+                                        <div class="row">
+                                            <button class="btn btn-success w-75" @onclick="() => AcceptRequest(item.Id)" >Accept</button>
+                                        </div>
+                                        <div class="row mt-1">
+                                            <button class="btn btn-danger w-75" @onclick="() => DeclineRequest(item.Id)">Decline</button>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            }
                         }
                       </div>
-                      @*@foreach (var item in Requests)
-                      {
                         
-                        <ul class="custom-notifications">
-                            <li>
-                              <a href="#" class="d-flex">
-                                  <!-- Maybe add Profile Picture later -->
-                                <div class="img mr-3">
-                                  <img src="images/person_1.jpg" alt="Image" class="img-fluid">
-                                </div>
-                                <div class="text">
-                                  <strong>@item.Sender.UserName:</strong> sent you a Friend Request
-                                </div>
-                                <div>
-                                  <a class="btn btn-success w-25 h-50" @onclick="() => AcceptRequest(item.Id)" >Accept</a>
-                                  <a class="btn btn-danger w-25 h-50" @onclick="() => DeclineRequest(item.Id)">Decline</a>
-                                </div>
-                              </a>
-                            </li>
-                          </ul>
-                      }*@
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
+            </NavLink>
 
 
         <div class="nav-item px-3">
@@ -91,12 +76,12 @@
         @foreach (var item in Friends)
         {
             <div class="nav-item px-3">
-                <a @onclick()=" () => StartChatWithFriend(@item.User.UserName)">
+                <NavLink class="nav-link" @onclick="() => StartChatWithFriend(item.User.UserName)">
                     <span class="oi oi-person" aria-hidden="true"></span> @item.User.UserName
-                </a>
+                </NavLink>
             </div>
         }
-        <div class="nav-item px-3">
+        @*<div class="nav-item px-3">
             <NavLink class="nav-link" href="counter">
                 <span class="oi oi-plus" aria-hidden="true"></span> Counter
             </NavLink>
@@ -105,7 +90,7 @@
             <NavLink class="nav-link" href="fetchdata">
                 <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch data
             </NavLink>
-        </div>
+        </div>*@
     </nav>
 </div>
 
@@ -130,23 +115,33 @@
 
     private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
+    private string username = "";
+
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
     }
 
-    private IActionResult StartChatWithFriend(string username)
+    private void StartChatWithFriend(string username)
     {
-        return new RedirectResult($"~/Chat/{username}");
+        navigationManager.NavigateTo($"/Chat/{username}");
     }
 
     protected override async void OnInitialized()
     {
-        var username = _context.HttpContext.User.Identity.Name;
-        if (username != null) Friends = await _friends.GetAllFriends(username);
-        var user = _http.HttpContext.User.Identity.Name;
-        Requests = await _req.GetAllRequestsFromUser(user);
+        //var username = _context.HttpContext.User.Identity.Name;
+        //if (username != null) Friends = await _friends.GetAllFriendsAsync(username);
+        //var user = _http.HttpContext.User.Identity.Name;
+        //Requests = await _req.GetAllRequestsFromUser(user);
 
         base.OnInitialized();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        username = _context.HttpContext.User.Identity.Name;
+        var user = _http.HttpContext.User.Identity.Name;
+        Requests = await _req.GetAllRequestsFromUser(user);
+        Friends = await _friends.GetAllFriendsAsync(user);
     }
 }
