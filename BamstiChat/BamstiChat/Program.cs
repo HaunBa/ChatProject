@@ -16,6 +16,14 @@ builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddScoped<IRequestService, RequestService>();
 builder.Services.AddScoped<IFriendService, FriendService>();
 builder.Services.AddScoped<IChatService, ChatService>();
+builder.Services.AddScoped<IMessageService, MessageService>();
+builder.Services.AddScoped<ChatHub>();
+
+builder.Services.AddResponseCompression(opts =>
+{
+    opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+        new[] { "application/octet-stream" });
+});
 
 builder.Services.AddSignalR();
 
@@ -46,7 +54,7 @@ app.MapControllers();
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
 
-app.MapHub<ChatHub>("/Chat");
-app.MapHub<NotificationHub>("/Notification");
+app.MapHub<ChatHub>("/ChatHub");
+app.MapHub<NotificationHub>("/NotificationHub");
 
 app.Run();

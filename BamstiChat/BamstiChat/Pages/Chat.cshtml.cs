@@ -8,6 +8,7 @@ namespace BamstiChat.Pages
     {
         private readonly IChatService _chatService;
         private readonly IMessageService _messageService;
+
         public ChatModel(IChatService chatService, IMessageService messageService)
         {
             _chatService = chatService;
@@ -17,11 +18,11 @@ namespace BamstiChat.Pages
         [Parameter]
         public string Username { get; set; }
 
-        public Message Messages { get; set; }
+        public List<Message> Messages { get; set; }
 
         public void OnGet()
         {
-
+            Messages = _messageService.GetAllMessagesBetweenUsers(User.Identity.Name, Username);
         }
     }
 }

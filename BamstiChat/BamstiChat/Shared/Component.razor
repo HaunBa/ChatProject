@@ -1,0 +1,55 @@
+﻿@page "/Chat/{Username}"
+@using Microsoft.AspNetCore.SignalR.Client
+@inject NavigationManager NavigationManager
+@inject IHttpContextAccessor _http
+
+<PageTitle>Chat with @Username</PageTitle>
+
+@code {
+    [Parameter]
+    public string Username { get; set; }
+
+    private HubConnection hubConnection;
+    private List<string> Messages = new List<string>();
+    private string userInput;
+    private string messageInput;
+
+    protected override async Task OnInitializedAsync()
+    {
+        hubConnection = new HubConnectionBuilder()
+                            .WithUrl(NavigationManager.ToAbsoluteUri("/chathub"))
+                            .Build();
+
+        
+
+        hubConnection.On<string, string>("NewMessage", (user, message) =>
+        {
+            var encodedMsg = $"{user} : {message}";
+            Messages.Add(encodedMsg);
+            InvokeAsync(StateHasChanged);
+        });
+
+        await hubConnection.StartAsync();
+
+        await hubConnection.InvokeAsync("JoinGroup", Username);
+    }
+
+    private async Task Send()
+    {
+        if (hubConnection is not null && _http is not null)
+        {
+            await hubConnection.SendAsync("NewMessage", _http.HttpContext.User.Identity.Name, Username , messageInput);
+        }
+    }
+
+    public bool IsConnected =>
+        hubConnection?.State == HubConnectionState.Connected;
+
+    public async ValueTask DisposeAsync()
+    {
+        if (hubConnection is not null)
+        {
+            await hubConnection.DisposeAsync();
+        }
+    }
+}

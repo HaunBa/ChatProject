@@ -127,16 +127,6 @@
         navigationManager.NavigateTo($"/Chat/{username}");
     }
 
-    protected override async void OnInitialized()
-    {
-        //var username = _context.HttpContext.User.Identity.Name;
-        //if (username != null) Friends = await _friends.GetAllFriendsAsync(username);
-        //var user = _http.HttpContext.User.Identity.Name;
-        //Requests = await _req.GetAllRequestsFromUser(user);
-
-        base.OnInitialized();
-    }
-
     protected override async Task OnInitializedAsync()
     {
         username = _context.HttpContext.User.Identity.Name;
