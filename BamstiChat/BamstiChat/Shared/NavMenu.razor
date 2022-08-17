@@ -4,6 +4,7 @@
 @inject IRequestService _req
 @inject IHttpContextAccessor _http
 @inject Microsoft.AspNetCore.Components.NavigationManager navigationManager
+@inject UserManager<ApplicationUser> _usr
 
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
@@ -67,10 +68,15 @@
               </div>
             </NavLink>
 
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="AllFriends">
+                <span class="oi oi-people" aria-hidden="true"></span> All Friends
+            </NavLink>
+        </div>
 
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="AddFriend">
-                <span class="oi oi-people" aria-hidden="true"></span> Add Friends
+                <span class="oi oi-plus" aria-hidden="true"></span> Add Friends
             </NavLink>
         </div>
         @foreach (var item in Friends)
@@ -129,9 +135,21 @@
 
     protected override async Task OnInitializedAsync()
     {
-        username = _context.HttpContext.User.Identity.Name;
-        var user = _http.HttpContext.User.Identity.Name;
-        Requests = await _req.GetAllRequestsFromUser(user);
-        Friends = await _friends.GetAllFriendsAsync(user);
+        var tmp = _usr.Users.Include(x => x.Friends);
+
+        if (Helpers.GetObjectFromJson<string>(_http.HttpContext.Session, "Username") != null || _http.HttpContext.User.Identity.Name != null)
+        {
+            // Authorized
+            Helpers.SetObjectAsJson(_http.HttpContext.Session, "Username", _http.HttpContext.User.Identity.Name);
+
+            username = _context.HttpContext.User.Identity.Name;
+            var user = _http.HttpContext.User.Identity.Name;
+            Requests = await _req.GetAllRequestsFromUser(user);
+            Friends = await _friends.GetAllFriendsAsync(user);
+        }else
+        {
+            // Not Authorized
+            navigationManager.NavigateTo("/Identity/Account/Login");
+        }
     }
 }

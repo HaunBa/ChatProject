@@ -4,9 +4,4 @@
 
 <PageTitle>Index</PageTitle>
 
-@if (_http.HttpContext.User.Identity.IsAuthenticated)
-{
-    <h1> Hello @_http.HttpContext.User.Identity.Name</h1>
-}else{
-    <h1> Welcome : )</h1>
-}
+<h1> Hello @_http.HttpContext.User.Identity.Name</h1>

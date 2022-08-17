@@ -1,0 +1,98 @@
+﻿@page "/AllFriends"
+@inject IHttpContextAccessor _http
+@inject IFriendService _friend
+
+<h3>All Friends</h3>
+
+<div>
+    <label for="filter">Search: </label> <input @bind="Input" type="text" id="filter" />
+</div>
+
+<table class="table table-striped">
+<thead>
+  <tr>
+    <th scope="col">Name</th>
+    <th scope="col">FriendCode</th>
+    <th scope="col">Friends since</th>
+    <th scope="col">Action</th>
+  </tr>
+</thead>
+<tbody>
+  @foreach (var item in FilteredList)
+    {
+            var tm = "#" + item.UserId;
+            var mid = item.UserId;
+            var titleId = "title_" + item.UserId;
+
+            <tr>
+            <td>@item.User.UserName</td>
+            <td>@item.User.FriendCode</td>
+            <td>@item.Since</td>
+            <td>
+                <div>
+                    <a class="btn btn-primary text-white">Details</a>
+                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="@tm">
+                        Delete
+                    </button>
+
+                    <div class="modal fade" id="@mid" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">&times;</button>
+                                    <h4 class="modal-title" id="@titleId">Delete Confirmation</h4>
+                                </div>
+                                <div class="modal-body">
+                                    Are you sure want to delete this item? @item.User.UserName
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-danger" @onclick="() => RemoveFriend(item.User.Id)"> Remove</button>
+                                    <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    }
+</tbody>
+</table>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous"/>
+
+@code {
+
+
+
+    private string input;
+
+    [BindProperty]
+    public string Input
+    {
+        get { return input; }
+        set { input = value; FilterList(); }
+    }
+
+
+    public List<Friend> Friends { get; set; } = new();
+    public List<Friend> FilteredList { get; set; } = new();
+
+    private void FilterList()
+    {
+        FilteredList = Friends.Where(x => x.User.UserName.ToLower().Contains(Input.ToLower())).ToList();
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void RemoveFriend(string friendId)
+    {
+        Console.WriteLine("RemoveFriend Clicked");
+    }
+
+    protected override void OnInitialized()
+    {
+        Friends = _friend.GetAllFriends(Helpers.GetObjectFromJson<string>(_http.HttpContext.Session, "Username"));
+        FilteredList = Friends;
+        base.OnInitialized();
+    }
+}

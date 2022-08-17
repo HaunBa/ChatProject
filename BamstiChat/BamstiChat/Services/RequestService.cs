@@ -55,7 +55,9 @@
                 return -1;
             }
 
-            foreach (var item in _context.Requests.Where(x => x.Retriever.Id == fUser.Id))
+            var users = _context.Requests.Where(x => x.Retriever.Id == fUser.Id);
+
+            foreach (var item in users)
             {
                 _context.Requests.Remove(item);
             }
@@ -68,7 +70,8 @@
         public async Task<List<Request>> GetAllRequestsFromUser(string username)
         {
             var fUser = await _context.Users.FirstOrDefaultAsync(x => x.UserName == username);
-            return _context.Requests.Include(x => x.Type).Where(x => x.Retriever == fUser).ToList();
+            var res = await _context.Requests.Include(x => x.Type).Include(x => x.Sender).Where(x => x.Retriever == fUser).ToListAsync();
+            return res;
         }
 
         public Task<int> RejectRequestFromUserWithId(string username, int reqId)

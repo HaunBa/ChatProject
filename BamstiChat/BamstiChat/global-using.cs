@@ -3,6 +3,7 @@ global using BamstiChat.Models;
 global using BamstiChat.Data;
 global using BamstiChat.Services;
 global using BamstiChat.Areas.Identity;
+global using BamstiChat.Extensions;
 
 // EF Core Dependencies
 global using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -18,6 +19,7 @@ global using Microsoft.AspNetCore.Mvc.RazorPages;
 global using System.ComponentModel.DataAnnotations.Schema;
 global using Microsoft.AspNetCore.Components.Authorization;
 global using System.ComponentModel.DataAnnotations;
+global using Newtonsoft.Json;
 
 // SignalR
 global using Microsoft.AspNetCore.SignalR;

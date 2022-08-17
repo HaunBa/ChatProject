@@ -2,43 +2,91 @@
 @using Microsoft.AspNetCore.SignalR.Client
 @inject NavigationManager NavigationManager
 @inject IHttpContextAccessor _http
+@inject IChatService _chat
 
 <PageTitle>Chat with @Username</PageTitle>
+
+<style>
+    .container {
+      display: flex;
+      flex-direction: column-reverse;
+    }
+</style>
+
+<div class="container">
+    <div class="row h-75">
+        <!-- Messages -->
+        <div class="col">
+            <ul>
+                @foreach (var item in Messages)
+                {
+                    <li>@item.SenderUser : @item.Text</li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="container fixed-bottom">
+    <div class="row">
+        <div class="col">
+            <!-- yes -->
+        </div>
+        <div class="col">
+            <input class="form-control w-50" type="text" @bind="messageInput" /> <button @onclick="() => Send()" class="btn btn-primary text-white w-25">Send</button>
+        </div>        
+    </div>
+</div>
 
 @code {
     [Parameter]
     public string Username { get; set; }
 
+    public List<Message> Messages { get; set; } = new List<Message>();
+
     private HubConnection hubConnection;
-    private List<string> Messages = new List<string>();
-    private string userInput;
     private string messageInput;
 
-    protected override async Task OnInitializedAsync()
+    protected override async void OnInitialized()
     {
+        await CheckForNewMessages();
+
+        InvokeAsync(StateHasChanged);
+
         hubConnection = new HubConnectionBuilder()
                             .WithUrl(NavigationManager.ToAbsoluteUri("/chathub"))
-                            .Build();
+                            .Build();        
 
-        
-
-        hubConnection.On<string, string>("NewMessage", (user, message) =>
+        hubConnection.On<Message>("NewMessage", (message) =>
         {
-            var encodedMsg = $"{user} : {message}";
-            Messages.Add(encodedMsg);
+            Messages.Add(message);
             InvokeAsync(StateHasChanged);
         });
 
         await hubConnection.StartAsync();
 
         await hubConnection.InvokeAsync("JoinGroup", Username);
+
+        base.OnInitialized();
+    }
+
+    private async Task CheckForNewMessages()
+    {
+        Messages = await _chat.GetMessagesFromChatByUsers(Username, Helpers.GetObjectFromJson<string>(_http.HttpContext.Session, "Username")) ?? new List<Message>();
+        Messages.Reverse();
+
+        InvokeAsync(StateHasChanged);
     }
 
     private async Task Send()
     {
-        if (hubConnection is not null && _http is not null)
+        if (hubConnection is not null && _http is not null && !string.IsNullOrEmpty(messageInput.Trim()))
         {
-            await hubConnection.SendAsync("NewMessage", _http.HttpContext.User.Identity.Name, Username , messageInput);
+            await hubConnection.SendAsync("SendMessage", _http.HttpContext.User.Identity.Name, Username , messageInput);
+
+            messageInput = "";
+
+            await CheckForNewMessages();
         }
     }
 
