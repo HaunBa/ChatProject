@@ -146,6 +146,8 @@
             var user = _http.HttpContext.User.Identity.Name;
             Requests = await _req.GetAllRequestsFromUser(user);
             Friends = await _friends.GetAllFriendsAsync(user);
+
+            InvokeAsync(StateHasChanged);
         }else
         {
             // Not Authorized
