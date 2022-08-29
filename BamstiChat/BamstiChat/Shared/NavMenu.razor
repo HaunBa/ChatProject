@@ -27,7 +27,7 @@
               <div class="row justify-content-center text-center">
                 <div class="col-md-5">
                   <div class="dropdown custom-dropdown">
-                    <a href="#" data-toggle="dropdown" class="dropdown-link" aria-haspopup="true" aria-expanded="false">
+                    <a href="" data-toggle="dropdown" class="dropdown-link" aria-haspopup="true" aria-expanded="false">
                       <span class="wrap-icon icon-notifications"></span>
                       <span class="number">@Requests.Count</span>              
                     </a>
@@ -147,7 +147,7 @@
             Requests = await _req.GetAllRequestsFromUser(user);
             Friends = await _friends.GetAllFriendsAsync(user);
 
-            InvokeAsync(StateHasChanged);
+            await InvokeAsync(StateHasChanged);
         }else
         {
             // Not Authorized
